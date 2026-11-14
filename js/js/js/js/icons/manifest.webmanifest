@@ -1,0 +1,17 @@
+{
+  "name": "املاخوان — فارسی پنجم دبستان",
+  "short_name": "املاخوان",
+  "description": "املای صوتی با تصحیح و نمره‌دهی خودکار و تخته‌ی آموزشی. طراح: منوچهر کریمی",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1f7f6",
+  "theme_color": "#0f766e",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
