@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>املاخوان | فارسی پنجم دبستان</title>
+<meta name="description" content="املاخوان: املای صوتی فارسی پنجم دبستان با تصحیح و نمره‌دهی خودکار و تخته‌ی آموزشی. طراح: منوچهر کریمی">
+<meta name="author" content="منوچهر کریمی">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <img src="icons/icon-192.png" alt="" width="46" height="46">
+    <div>
+      <h1>املاخوان</h1>
+      <p>فارسی پنجم دبستان</p>
+    </div>
+  </div>
+  <nav>
+    <button id="btnReport" type="button">📒 کارنامه</button>
+    <button id="btnSettings" type="button">⚙️ تنظیمات</button>
+    <button id="btnAbout" type="button">ℹ️ درباره</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ========== صفحه‌ی درس‌ها ========== -->
+  <section id="home">
+    <div class="hello panel">
+      <label for="studentName">نام دانش‌آموز</label>
+      <input id="studentName" type="text" placeholder="نام و نام خانوادگی" autocomplete="off">
+      <p class="hint">یک درس را انتخاب کن. برنامه متن را می‌خواند، تو می‌نویسی، برنامه خودش تصحیح و نمره می‌دهد.</p>
+    </div>
+    <div id="lessonList"></div>
+    <p class="note">درس‌های آزاد (درس ۷ و درس ۱۲) در املا نیستند.</p>
+  </section>
+
+  <!-- ========== صفحه‌ی املا ========== -->
+  <section id="work" hidden>
+    <div class="workbar">
+      <button id="btnBack" type="button" class="ghost">→ درس‌ها</button>
+      <h2 id="workTitle"></h2>
+      <button id="btnEditText" type="button" class="ghost">✏️ ویرایش متن</button>
+    </div>
+
+    <div class="board-box" id="boardBox">
+      <div class="tools" id="tools"></div>
+      <div class="board-wrap" id="boardWrap">
+        <canvas class="c-bg"></canvas>
+        <canvas class="c-tx"></canvas>
+        <canvas class="c-dr"></canvas>
+        <canvas class="c-fx"></canvas>
+      </div>
+    </div>
+
+    <!-- پایین تخته: کنترل املا و جای نوشتن -->
+    <div class="panel dict">
+      <div class="dict-btns">
+        <button id="btnStart" type="button" class="primary">🔊 شروع املا</button>
+        <button id="btnPause" type="button" disabled>⏸ توقف</button>
+        <button id="btnPrev" type="button" disabled>⏮ قبلی</button>
+        <button id="btnRepeat" type="button" disabled>🔁 تکرار</button>
+        <button id="btnNext" type="button" disabled>⏭ بعدی</button>
+      </div>
+      <div class="progress"><div id="progBar"></div></div>
+      <p id="dictStatus" class="status">آماده‌ای؟ دکمه‌ی «شروع املا» را بزن.</p>
+      <div id="teacherLine" class="teacher-line" hidden></div>
+      <p id="voiceWarn" class="warn" hidden></p>
+    </div>
+
+    <div class="panel write">
+      <label for="answer">اینجا بنویس؛ نوشته‌ات خودکار روی تخته می‌رود:</label>
+      <textarea id="answer" rows="5" dir="rtl" lang="fa" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="املایت را اینجا بنویس..."></textarea>
+      <div class="write-btns">
+        <button id="btnZwnj" type="button" title="نیم‌فاصله را بین دو بخش کلمه بگذار؛ مثل می‌کنیم">نیم‌فاصله ‌</button>
+        <button id="btnClearAns" type="button">🧹 پاک کردن نوشته</button>
+        <button id="btnCheck" type="button" class="primary big">✅ تصحیح کن و نمره بده</button>
+      </div>
+    </div>
+
+    <div class="panel result" id="resultPanel" hidden></div>
+  </section>
+</main>
+
+<footer>
+  <span>طراح: <b>منوچهر کریمی</b></span>
+  <span class="dot">•</span>
+  <span>املاخوان — فارسی پنجم دبستان</span>
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+
+<!-- ========== پنجره‌ها ========== -->
+<dialog id="dlgSettings">
+  <form method="dialog" class="dlg">
+    <h3>⚙️ تنظیمات</h3>
+    <label>سرعت خواندن: <b id="rateVal"></b>
+      <input id="setRate" type="range" min="0.5" max="1.1" step="0.05">
+    </label>
+    <label>مکث بین جمله‌ها
+      <select id="setPause">
+        <option value="0.7">کم (نویسنده‌ی تند)</option>
+        <option value="1">متوسط</option>
+        <option value="1.5">زیاد</option>
+        <option value="2.2">خیلی زیاد (برای شروع)</option>
+      </select>
+    </label>
+    <label class="chk"><input id="setIntro" type="checkbox"> اول، کل متن یک بار خوانده شود</label>
+    <label class="chk"><input id="setTwice" type="checkbox"> هر جمله دو بار گفته شود</label>
+    <label class="chk"><input id="setShowText" type="checkbox"> نمایش متن هر جمله (برای معلم یا والدین، اگر صدای فارسی نبود)</label>
+    <div class="row">
+      <button id="btnTestVoice" type="button">🔈 آزمایش صدا</button>
+      <span id="voiceInfo" class="hint"></span>
+    </div>
+    <div class="row end"><button value="close" class="primary">بستن</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgReport">
+  <form method="dialog" class="dlg">
+    <h3>📒 کارنامه</h3>
+    <div id="reportBody"></div>
+    <div class="row">
+      <button id="btnClearHistory" type="button" class="danger">پاک کردن کارنامه</button>
+      <button value="close" class="primary">بستن</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgAbout">
+  <form method="dialog" class="dlg about">
+    <img src="icons/icon-192.png" alt="" width="96" height="96">
+    <h3>املاخوان</h3>
+    <p>املای صوتی درس‌های فارسی پنجم دبستان<br>با تصحیح و نمره‌دهی خودکار و تخته‌ی آموزشی</p>
+    <p class="designer">طراح: منوچهر کریمی</p>
+    <p class="hint">متن‌ها از کتاب فارسی پنجم دبستان (۵۰۳) است. درس‌های آزاد در املا نیستند.</p>
+    <div class="row end"><button value="close" class="primary">بستن</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgEdit">
+  <form method="dialog" class="dlg">
+    <h3 id="editTitle">ویرایش متن املا</h3>
+    <p class="hint">برای جدا کردن مصراع‌ها از «/» استفاده کن. نقطه و ویرگول در نمره اثری ندارند.</p>
+    <textarea id="editText" rows="10" dir="rtl" lang="fa" spellcheck="false"></textarea>
+    <div class="row">
+      <button id="btnEditReset" type="button">بازگرداندن متن اصلی</button>
+      <button id="btnEditSave" type="button" class="primary">ذخیره</button>
+      <button value="close">بستن</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="js/lessons.js"></script>
+<script src="js/diff.js"></script>
+<script src="js/board.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
